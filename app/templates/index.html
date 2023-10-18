@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <h1>welcome {{ user.username }}</h1>
+    <h4>Elenco posts</h4>
+    {% for p in posts %}
+        <article>
+            <h3>{{ p.author }}</h3>
+            <p>{{ p.message }}</p>
+        </article>
+    {% endfor %}
+
+{% endblock %}
