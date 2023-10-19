@@ -1,22 +1,23 @@
-{% extends "base.html" %} {% block content %}
-<form action="" method="post" novalidate>
-  {{ form.hidden_tag() }}
-  <p>
-    {{ form.usr.label }}<br />
-    {{ form.usr(size=20)}} <br />
-    {% for error in form.usr.errors %}
-        <span style="color: red">[{{ error }}]</span>
-    {% endfor %}
-  </p>
+{% extends "base.html" %} 
+{% block content %}
+  <form action="" method="post" novalidate>
+    {{ form.hidden_tag() }}
+    <p>
+      {{ form.usr.label }}<br />
+      {{ form.usr(size=20)}} <br />
+      {% for error in form.usr.errors %}
+          <span style="color: red">[{{ error }}]</span>
+      {% endfor %}
+    </p>
 
-  <p>
-    {{ form.pwd.label }}<br />
-    {{ form.pwd(size=20)}} <br />
-    {% for error in form.pwd.errors %}
-        <span style="color: red">[{{ error }}]</span>
-    {% endfor %}
-  </p>
+    <p>
+      {{ form.pwd.label }}<br />
+      {{ form.pwd(size=20)}} <br />
+      {% for error in form.pwd.errors %}
+          <span style="color: red">[{{ error }}]</span>
+      {% endfor %}
+    </p>
 
-  <p>{{ form.submit }}</p>
-</form>
+    <p>{{ form.submit }}</p>
+  </form>
 {% endblock %}
