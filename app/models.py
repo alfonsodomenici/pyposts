@@ -3,7 +3,7 @@ from passlib.hash import pbkdf2_sha256 as sha256
 from flask import current_app
 from app import db
 from app.exceptions import ValidationError
-from datetime_utils import format_dt
+from app.datetimes import format_dt
 
 class Role(db.Model):
     __tablename__ = 'role'
