@@ -1,6 +1,9 @@
+from datetime import datetime
 from passlib.hash import pbkdf2_sha256 as sha256
+from flask import current_app
 from app import db
 from app.exceptions import ValidationError
+from datetime_utils import format_dt
 
 class Role(db.Model):
     __tablename__ = 'role'
@@ -16,6 +19,7 @@ class Role(db.Model):
         }
     
     def from_json(json):
+        current_app.logger.info(json)
         name=json.get('name')
         if name is None or name == '':
             raise ValidationError('role name vuoto')
@@ -28,6 +32,7 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True, nullable=False)
     username = db.Column(db.String(50), unique=True, nullable=False)
     password = db.Column(db.String(50), nullable=False)
+    created_on = db.Column(db.DateTime, default=datetime.now()) 
     role_id = db.Column(db.Integer, db.ForeignKey('role.id'), nullable=False)
 
     @staticmethod
@@ -42,6 +47,7 @@ class User(db.Model):
         return {
             'id':self.id,
             'username':self.username,
+            'created_on':format_dt(self.created_on),
             'role_id': self.role_id
         }
     
@@ -53,9 +59,8 @@ class User(db.Model):
             raise ValidationError('username vuoto')
         if password is None or password == '':
             raise ValidationError('password vuota')
-        if role_id is None:
-            raise ValidationError('role vuota')
-        Role.query.get_or_404(role_id)
+        if role_id is None or Role.query.get(role_id) is None:
+            raise ValidationError('role vuota o inesistente role_id:{}'.format(role_id))
         password=User.generate_hash(password)
         return User(username=username,password=password,role_id=role_id)
 
