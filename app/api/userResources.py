@@ -32,10 +32,8 @@ def all_users():
 @api.route('/users/<int:id>')
 @jwt_required()
 def find_user(id):
-    if id!=current_user.id and not current_user.is_admin():
-        return 'unautorized',401
-    user=User.query.get_or_404(id).to_json()
-    return response_with(resp.SUCCESS_200,value={'user':user})
+    user=_check_and_find_user(id)
+    return response_with(resp.SUCCESS_200,value={'user':user.to_json()})
 
 
 @api.route('/users', methods=['POST'])
@@ -50,7 +48,7 @@ def create_user():
 @api.route('/users/<int:id>', methods=['PUT'])
 @jwt_required()
 def update_user(id):
-    user = User.query.get_or_404(id)
+    user = _check_and_find_user(id)
     user.username = request.json.get('username',user.username)
     db.session.add(user)
     db.session.commit()    
@@ -60,7 +58,7 @@ def update_user(id):
 @api.route('/users/<int:id>', methods=['DELETE'])
 @jwt_required()
 def delete_user(id):
-    user = User.query.get_or_404(id)
+    user = _check_and_find_user(id)
     db.session.delete(user)
     db.session.commit()
     return response_with(resp.SUCCESS_204)
@@ -82,3 +80,9 @@ def user_login():
         return response_with(resp.SUCCESS_201,value={'access_token':token})
     
     return response_with(resp.UNAUTHORIZED_401,message='login failed, invalid password')
+
+def _check_and_find_user(id):
+    user = User.query.get_or_404(id)
+    if id!=current_user.id and not current_user.is_admin():
+        return 'unautorized',401
+    return user

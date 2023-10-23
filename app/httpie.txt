@@ -1,0 +1,9 @@
+http POST 127.0.0.1:5000/api/users/login username=mario password=mario
+
+http GET 127.0.0.1:5000/api/roles Authorization:"Bearer $JWT"
+
+http GET 127.0.0.1:5000/api/users/1 Authorization:"Bearer $JWT"
+
+http POST 127.0.0.1:5000/api/posts message='messagio di mario' Authorization:"Bearer $JWT"
+
+http GET 127.0.0.1:5000/api/posts Authorization:"Bearer $JWT"

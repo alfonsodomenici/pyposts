@@ -2,4 +2,4 @@ from flask import Blueprint
 
 api = Blueprint('api',__name__)
 
-from . import roleResources, userResources, errors
+from . import roleResources, userResources, postResources, errors
