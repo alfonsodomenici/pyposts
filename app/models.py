@@ -1,5 +1,5 @@
 from datetime import datetime
-from passlib.hash import pbkdf2_sha256 as sha256
+from passlib.hash import pbkdf2_sha256 as sha256 
 from flask import current_app
 from app import db
 from app.exceptions import ValidationError
@@ -61,8 +61,15 @@ class User(db.Model):
             raise ValidationError('password vuota')
         if role_id is None or Role.query.get(role_id) is None:
             raise ValidationError('role vuota o inesistente role_id:{}'.format(role_id))
-        password=User.generate_hash(password)
-        return User(username=username,password=password,role_id=role_id)
+        hash=sha256.hash(user_json.get('password')) 
+        return User(username=username,password=hash,role_id=role_id)
+    
+    @classmethod
+    def find_by_username(cls, username):
+        return cls.query.filter_by(username=username).first()
+
+    def is_admin(self):
+        return self.role.name=='ADMIN'
 
     def __repr__(self):
         return '<User {}>'.format(self.username)
