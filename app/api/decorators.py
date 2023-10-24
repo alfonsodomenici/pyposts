@@ -2,7 +2,8 @@ from functools import wraps
 from flask import jsonify
 from flask_jwt_extended import verify_jwt_in_request, get_jwt
 from app.models import User
-
+from .responses import response_with
+from . import responses as resp
 def admin_required():
     def wrapper(fn):
         @wraps(fn)
@@ -13,6 +14,6 @@ def admin_required():
             if role == 'ADMIN':
                 return fn(*args,**kwargs)
             else:
-                return jsonify(msg="Admins only!"), 403
+                return response_with(resp.FORBIDDEN_403,error='Admin only')
         return decorator
     return wrapper

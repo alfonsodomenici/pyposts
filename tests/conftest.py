@@ -18,15 +18,6 @@ def jwt(app):
     return JWTManager(app)
 
 @pytest.fixture
-def client(app):
-    return app.test_client()
-
-
-@pytest.fixture
-def runner(app):
-    return app.test_cli_runner()
-
-@pytest.fixture
 def db(app, client, request):
     database.drop_all()
     database.create_all()
