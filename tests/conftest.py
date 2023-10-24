@@ -42,18 +42,3 @@ def role_admin(db):
     db.session.add(r)
     db.session.commit()
     return r
-
-@pytest.fixture
-def admin(db,role_admin):
-    user = User(username='admin', password='admin',role=role_admin)
-    db.session.add(user)
-    db.session.commit()
-    return user
-
-
-@pytest.fixture
-def user(db,role_user):
-    admin = User(username='user', password='user',role=role_user)
-    db.session.add(admin)
-    db.session.commit()
-    return admin

@@ -8,9 +8,11 @@ from .responses import response_with
 from . import responses as resp
 from app.exceptions import NotResourceOwnerError
 
-@api.route('/users', methods=['GET'])
+users = Blueprint('users',__name__)
+
+@users.route('/', methods=['GET'])
 @admin_required()
-def all_users():
+def all():
     # ko TypeError: Object of type User is not JSON serializable
     # return User.query.all()  
 
@@ -30,15 +32,15 @@ def all_users():
     result = [user.to_json() for user in User.query.all()]
     return response_with(resp.SUCCESS_200,value={'users':result})
 
-@api.route('/users/<int:id>')
+@users.route('/<int:id>')
 @jwt_required()
-def find_user(id):
+def find(id):
     user=_check_and_find_user(id)
     return response_with(resp.SUCCESS_200,value={'user':user.to_json()})
 
 
-@api.route('/users', methods=['POST'])
-def create_user():
+@users.route('/', methods=['POST'])
+def create():
     data = request.get_json()
     current_app.logger.info(data)
     user = User.from_json(data)
@@ -46,9 +48,9 @@ def create_user():
     db.session.commit()
     return response_with(resp.SUCCESS_201,value={'user':user.to_json()})
 
-@api.route('/users/<int:id>', methods=['PUT'])
+@users.route('/<int:id>', methods=['PUT'])
 @jwt_required()
-def update_user(id):
+def update(id):
     user = _check_and_find_user(id)
     user.username = request.json.get('username',user.username)
     db.session.add(user)
@@ -56,17 +58,17 @@ def update_user(id):
     return response_with(resp.SUCCESS_200,value={'user':user.to_json()})
 
 
-@api.route('/users/<int:id>', methods=['DELETE'])
+@users.route('/<int:id>', methods=['DELETE'])
 @admin_required()
-def delete_user(id):
+def delete(id):
     user = _check_and_find_user(id)
     db.session.delete(user)
     db.session.commit()
     return response_with(resp.SUCCESS_204)
 
 
-@api.route('/users/login', methods=['POST'])
-def user_login():
+@users.route('/login', methods=['POST'])
+def login():
     data=request.get_json()
     
     if data.get('username') is None or data.get('password') is None:

@@ -5,36 +5,38 @@ from . import api
 from ..models import Role
 from .decorators import admin_required
 
-@api.route('/roles', methods=['GET'])
+roles = Blueprint('roles',__name__)
+
+@roles.route('/', methods=['GET'])
 @jwt_required()
-def all_roles():
+def all():
     return jsonify([role.to_json() for role in Role.query.all()])
 
-@api.route('/roles/<int:id>')
+@roles.route('/<int:id>')
 @jwt_required
-def find_role(id):
+def find(id):
     return db.get_or_404(Role,id).to_json()
 
-@api.route('/roles', methods=['POST'])
+@roles.route('/', methods=['POST'])
 @admin_required()
-def create_role():
+def create():
     role = Role.from_json(request.json)
     db.session.add(role)
     db.session.commit()
     return jsonify(role.to_json()),201
 
-@api.route('/roles/<int:id>', methods=['PUT'])
+@roles.route('/<int:id>', methods=['PUT'])
 @admin_required()
-def update_role(id):
+def update(id):
     role = db.get_or_404(Role,id)
     role.username = request.json.get('name',role.name)
     db.session.add(role)
     db.session.commit()    
     return jsonify(role.to_json())
 
-@api.route('/roles/<int:id>', methods=['DELETE'])
+@roles.route('/<int:id>', methods=['DELETE'])
 @admin_required()
-def delete_role(id):
+def delete(id):
     role = db.get_or_404(id)
     db.session.delete(role)
     db.session.commit()

@@ -6,6 +6,7 @@ from app.exceptions import ValidationError, NotResourceOwnerError
 from . import api
 from .responses import response_with
 from . import responses as resp
+from .userResources import users
 
 @api.errorhandler(404)
 def notFoundError(e):

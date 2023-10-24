@@ -1,4 +1,4 @@
-from flask import request, current_app
+from flask import request, current_app, Blueprint
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from .decorators import admin_required
 from .responses import response_with
@@ -8,24 +8,26 @@ from ..models import Post,User
 from app import db
 from app.exceptions import NotResourceOwnerError
 
-@api.route('/posts')
+posts = Blueprint('posts',__name__)
+
+@posts.route('/')
 @jwt_required()
-def all_posts():
+def all():
     logged = logged_user()
     posts = Post.query.all() if logged.is_admin() else Post.find_by_user_id(logged.id)
     result = [post.to_json() for post in posts]
     return response_with(resp.SUCCESS_200,value={'posts':result}) 
 
-@api.route('/posts/<int:id>')
+@posts.route('/<int:id>')
 @jwt_required()
-def find_post(id):
+def find(id):
     post=_check_and_find_post(id)
     return response_with(resp.SUCCESS_200,value={'post':post.to_json()})
 
 
-@api.route('/posts', methods=['POST'])
+@posts.route('/', methods=['POST'])
 @jwt_required()
-def create_post():
+def create():
     logged = logged_user()
     data = request.get_json()
     current_app.logger.info(data)
@@ -35,9 +37,9 @@ def create_post():
     db.session.commit()
     return response_with(resp.SUCCESS_201,value={'post':post.to_json()})
 
-@api.route('/posts/<int:id>', methods=['PUT'])
+@posts.route('/<int:id>', methods=['PUT'])
 @jwt_required()
-def update_post(id):
+def update(id):
     post = _check_and_find_post(id)
     post.message = request.json.get('message',post.message)
     db.session.add(post)
@@ -45,9 +47,9 @@ def update_post(id):
     return response_with(resp.SUCCESS_200,value={'post':post.to_json()})
 
 
-@api.route('/posts/<int:id>', methods=['DELETE'])
+@posts.route('/<int:id>', methods=['DELETE'])
 @jwt_required()
-def delete_post(id):
+def delete(id):
     post = _check_and_find_post(id)
     db.session.delete(post)
     db.session.commit()
