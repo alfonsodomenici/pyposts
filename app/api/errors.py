@@ -2,7 +2,7 @@ from werkzeug.exceptions import NotFound,HTTPException
 from flask_jwt_extended.exceptions import JWTExtendedException
 from sqlalchemy.exc import DBAPIError
 from flask import jsonify, current_app
-from app.exceptions import ValidationError
+from app.exceptions import ValidationError, NotResourceOwnerError
 from . import api
 from .responses import response_with
 from . import responses as resp
@@ -16,6 +16,11 @@ def notFoundError(e):
 def validationError(e):
     current_app.logger.error('ValidationError. {}'.format(e.args[0]))
     return response_with(resp.BAD_REQUEST_400, error=e.args[0])
+
+@api.errorhandler(NotResourceOwnerError)
+def notResourceOwnerError(e):
+    current_app.logger.error('NotResourceOwnerError. {}'.format(e.args[0]))
+    return response_with(resp.FORBIDDEN_403, error='You do not own the resource.Admin only')
 
 @api.errorhandler(HTTPException)
 def httpException(e):

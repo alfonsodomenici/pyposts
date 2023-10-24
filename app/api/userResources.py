@@ -6,6 +6,7 @@ from .decorators import admin_required
 from ..models import User
 from .responses import response_with
 from . import responses as resp
+from app.exceptions import NotResourceOwnerError
 
 @api.route('/users', methods=['GET'])
 @admin_required()
@@ -56,7 +57,7 @@ def update_user(id):
 
 
 @api.route('/users/<int:id>', methods=['DELETE'])
-@jwt_required()
+@admin_required()
 def delete_user(id):
     user = _check_and_find_user(id)
     db.session.delete(user)
@@ -89,6 +90,6 @@ def _check_and_find_user(id):
     user = db.get_or_404(User,id)
     current_app.logger.info(user.id)
     if id!=logged.id and not logged.is_admin():
-        return response_with(resp.FORBIDDEN_403)
+        raise NotResourceOwnerError("id non corrospondente")
     return user
 

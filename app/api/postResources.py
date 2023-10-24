@@ -6,6 +6,7 @@ from . import responses as resp
 from . import api
 from ..models import Post,User
 from app import db
+from app.exceptions import NotResourceOwnerError
 
 @api.route('/posts')
 @jwt_required()
@@ -60,5 +61,5 @@ def _check_and_find_post(id):
     logged = logged_user()
     post = db.get_or_404(Post,id)
     if post.user_id!=logged.id and not logged.is_admin():
-        return 'unautorized',401
+        raise NotResourceOwnerError('id non corrispondente')
     return post
