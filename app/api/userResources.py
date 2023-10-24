@@ -76,6 +76,7 @@ def user_login():
         return response_with(resp.UNAUTHORIZED_401,message='login failed')
 
     if User.check_hash(data.get('password'),user.password):
+<<<<<<< HEAD
         token=create_access_token(identity=user.username)
         return response_with(resp.SUCCESS_201,value={'access_token':token})
     
@@ -86,3 +87,9 @@ def _check_and_find_user(id):
     if id!=current_user.id and not current_user.is_admin():
         return 'unautorized',401
     return user
+=======
+        additional_claims={'role':user.role.name}
+        token=create_access_token(identity=user.username, additional_claims=additional_claims)
+        return jsonify(access_token=token)
+    return 'login failed, bad password',401
+>>>>>>> 06-jwt-auth
