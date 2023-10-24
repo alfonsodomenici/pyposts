@@ -5,6 +5,7 @@ from app import db
 from app.exceptions import ValidationError
 from app.datetimes import format_dt
 from app.models.role import Role
+from app import ma
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True, nullable=False)
@@ -51,3 +52,8 @@ class User(db.Model):
 
     def __repr__(self):
         return '<User {}>'.format(self.username)
+    
+
+class UserSchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        model = User

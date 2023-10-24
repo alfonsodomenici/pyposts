@@ -7,6 +7,7 @@ from app.models.user import User
 from .responses import response_with
 from . import responses as resp
 from app.exceptions import NotResourceOwnerError
+from app.models.user import UserSchema
 
 users = Blueprint('users',__name__)
 
@@ -29,8 +30,9 @@ def all():
     # return json.dumps({'id':1,'username':'rossi'}) 
     identity = get_jwt_identity()
     current_app.logger.info(f'current identy {identity}')
-    result = [user.to_json() for user in User.query.all()]
-    return response_with(resp.SUCCESS_200,value={'users':result})
+    #result = [user.to_json() for user in User.query.all()]
+    result=User.query.all()
+    return response_with(resp.SUCCESS_200,value={'users':UserSchema(many=True).dump(result)})
 
 @users.route('/<int:id>')
 @jwt_required()
