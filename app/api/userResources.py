@@ -85,6 +85,6 @@ def user_login():
 def _check_and_find_user(id):
     user = User.query.get_or_404(id)
     if id!=current_user.id and not current_user.is_admin():
-        return 'unautorized',401
+        return response_with(resp.FORBIDDEN_403)
     return user
 
