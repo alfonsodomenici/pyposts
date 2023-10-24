@@ -4,6 +4,8 @@ from flask import current_app
 from app import db
 from app.exceptions import ValidationError
 from app.datetimes import format_dt
+from app import ma
+from app.models.schemas import must_not_be_blank
 
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True, nullable=False)
@@ -30,3 +32,16 @@ class Post(db.Model):
     def __repr__(self):
         return f'<Post {self.message}>'
     
+class PostSchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        model = Post
+        include_fk = True
+        load_instance = True
+        sqla_session = db.session
+
+    message=ma.auto_field(validate=must_not_be_blank)
+
+
+
+postschema = PostSchema()
+posts_schema = PostSchema(many=True)  

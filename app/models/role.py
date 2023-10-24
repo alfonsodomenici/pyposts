@@ -4,6 +4,8 @@ from flask import current_app
 from app import db
 from app.exceptions import ValidationError
 from app.datetimes import format_dt
+from app import ma
+from app.models.schemas import must_not_be_blank
 
 class Role(db.Model):
     __tablename__ = 'role'
@@ -37,3 +39,5 @@ class Role(db.Model):
 
     def __repr__(self):
         return '<Role {}>'.format(self.name)
+    
+
