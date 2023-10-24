@@ -3,7 +3,7 @@ import pytest
 
 from app import create_app
 from app import db as database
-from app.models import User,Role
+from app.models.role import Role
 from flask_jwt_extended import JWTManager
 #from tests.util import EMAIL, ADMIN_EMAIL, PASSWORD
 

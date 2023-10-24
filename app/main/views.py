@@ -1,6 +1,7 @@
 from flask import render_template, redirect, url_for, flash, make_response
 from app.main.forms import LoginForm
-from ..models import Role,User
+from app.models.role import Role
+from app.models.user import User
 from . import main
 from app import db
 

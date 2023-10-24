@@ -3,7 +3,7 @@ from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_requir
 from app import db
 from . import api
 from .decorators import admin_required
-from ..models import User
+from app.models.user import User
 from .responses import response_with
 from . import responses as resp
 from app.exceptions import NotResourceOwnerError

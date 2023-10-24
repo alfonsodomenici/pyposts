@@ -2,7 +2,7 @@ from flask import json,jsonify,request, Blueprint
 from flask_jwt_extended import jwt_required
 from app import db
 from . import api
-from ..models import Role
+from app.models.role import Role
 from .decorators import admin_required
 
 roles = Blueprint('roles',__name__)

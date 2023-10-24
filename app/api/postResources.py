@@ -4,7 +4,8 @@ from .decorators import admin_required
 from .responses import response_with
 from . import responses as resp
 from . import api
-from ..models import Post,User
+from app.models.user import User
+from app.models.post import Post
 from app import db
 from app.exceptions import NotResourceOwnerError
 

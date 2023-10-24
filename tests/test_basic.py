@@ -1,4 +1,5 @@
-from app.models import User,Role
+from app.models.user import User
+from app.models.role import Role
 
 def test_config(app):
     assert app.config['TESTING'] == True
