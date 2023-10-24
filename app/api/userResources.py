@@ -85,7 +85,9 @@ def user_login():
 def _check_and_find_user(id):
     identity = get_jwt_identity()
     logged= User.find_by_username(identity)
+    current_app.logger.info(logged.id)
     user = db.get_or_404(User,id)
+    current_app.logger.info(user.id)
     if id!=logged.id and not logged.is_admin():
         return response_with(resp.FORBIDDEN_403)
     return user
