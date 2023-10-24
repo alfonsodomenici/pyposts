@@ -72,6 +72,7 @@ def user_login():
         return 'login failed', 401
 
     if User.check_hash(data.get('password'),user.password):
-        token=create_access_token(identity=user.username)
+        additional_claims={'role':user.role.name}
+        token=create_access_token(identity=user.username, additional_claims=additional_claims)
         return jsonify(access_token=token)
     return 'login failed, bad password',401
