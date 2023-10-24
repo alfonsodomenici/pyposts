@@ -11,4 +11,4 @@ api.register_blueprint(users, url_prefix='/users', )
 from .roleResources import roles
 api.register_blueprint(roles, url_prefix='/roles')
 
-from . import roleResources, userResources, postResources, errors
+from . import  errors
