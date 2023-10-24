@@ -12,7 +12,7 @@ class Role(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), unique=True)
 
-    users = db.relationship('User', backref='role')
+    #users = db.relationship('User', backref='role')
 
     def to_json(self):
         return {
@@ -41,3 +41,13 @@ class Role(db.Model):
         return '<Role {}>'.format(self.name)
     
 
+class RoleSchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        model = Role
+        load_instance = True
+        sqla_session = db.session
+
+    name=ma.auto_field(validate=must_not_be_blank)
+
+role_schema = RoleSchema()
+roles_schema = RoleSchema(many=True)   

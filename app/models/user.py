@@ -14,6 +14,7 @@ class User(db.Model):
     password = db.Column(db.String(50), nullable=False)
     created_on = db.Column(db.DateTime, default=datetime.now()) 
     role_id = db.Column(db.Integer, db.ForeignKey('role.id'), nullable=False)
+    role = db.relationship("Role", backref="users")
 
     @staticmethod
     def generate_hash(pwd):
