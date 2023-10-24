@@ -25,6 +25,16 @@ class Role(db.Model):
             raise ValidationError('role name vuoto')
         return Role(name=name)
     
+    @staticmethod
+    def insert_roles():
+        default_roles=[Role(name='ADMIN'),Role(name='USER')]
+        roles = Role.query.all()
+        [db.session.add(role) for role in default_roles if role not in roles ]
+        db.session.commit
+    
+    def __eq__(self, other):
+        return self.name == other.name
+
     def __repr__(self):
         return '<Role {}>'.format(self.name)
 
@@ -59,7 +69,7 @@ class User(db.Model):
             raise ValidationError('username vuoto')
         if password is None or password == '':
             raise ValidationError('password vuota')
-        if role_id is None or Role.query.get(role_id) is None:
+        if role_id is None or db.session.get(Role,role_id) is None:
             raise ValidationError('role vuota o inesistente role_id:{}'.format(role_id))
         hash=sha256.hash(user_json.get('password')) 
         return User(username=username,password=hash,role_id=role_id)

@@ -2,6 +2,7 @@ from flask import render_template, redirect, url_for, flash, make_response
 from app.main.forms import LoginForm
 from ..models import Role,User
 from . import main
+from app import db
 
 @main.route("/")
 @main.route("/home")
@@ -23,4 +24,4 @@ def login():
 
 @main.route('/dummy')
 def dummy():
-    return str(User.query.get_or_404(1))   
+    return str(db.get_or_404(User,1))   

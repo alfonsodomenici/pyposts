@@ -1,5 +1,5 @@
 from flask import json,jsonify,request, Blueprint, current_app
-from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required, current_user
+from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
 from app import db
 from . import api
 from .decorators import admin_required
@@ -25,9 +25,9 @@ def all_users():
     # ok content-type text/html; charset=utf-8
     # return json.dumps({'id':1,'username':'rossi'}) 
     identity = get_jwt_identity()
-    current_app.logger.info(f'current identy {identity} {current_user}')
+    current_app.logger.info(f'current identy {identity}')
     result = [user.to_json() for user in User.query.all()]
-    return response_with(resp.SUCCESS_201,value={'users':result})
+    return response_with(resp.SUCCESS_200,value={'users':result})
 
 @api.route('/users/<int:id>')
 @jwt_required()
@@ -83,8 +83,10 @@ def user_login():
     return response_with(resp.UNAUTHORIZED_401,message='login failed, invalid password')
 
 def _check_and_find_user(id):
-    user = User.query.get_or_404(id)
-    if id!=current_user.id and not current_user.is_admin():
+    identity = get_jwt_identity()
+    logged= User.find_by_username(identity)
+    user = db.get_or_404(User,id)
+    if id!=logged.id and not logged.is_admin():
         return response_with(resp.FORBIDDEN_403)
     return user
 

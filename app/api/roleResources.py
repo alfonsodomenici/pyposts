@@ -13,7 +13,7 @@ def all_roles():
 @api.route('/roles/<int:id>')
 @jwt_required
 def find_role(id):
-    return Role.query.get_or_404(id).to_json()
+    return db.get_or_404(Role,id).to_json()
 
 @api.route('/roles', methods=['POST'])
 @admin_required()
@@ -26,7 +26,7 @@ def create_role():
 @api.route('/roles/<int:id>', methods=['PUT'])
 @admin_required()
 def update_role(id):
-    role = Role.query.get_or_404(id)
+    role = db.get_or_404(Role,id)
     role.username = request.json.get('name',role.name)
     db.session.add(role)
     db.session.commit()    
@@ -35,7 +35,7 @@ def update_role(id):
 @api.route('/roles/<int:id>', methods=['DELETE'])
 @admin_required()
 def delete_role(id):
-    role = Role.query.get_or_404(id)
+    role = db.get_or_404(id)
     db.session.delete(role)
     db.session.commit()
     return "", 204
