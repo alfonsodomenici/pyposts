@@ -44,12 +44,12 @@ class User(db.Model):
         return sha256.hash(pwd)
     
     @staticmethod
-    def check_hash(pwd,hsh):
+    def check_hash(pwd,hash):
         return sha256.verify(pwd,hash)
 
     @staticmethod
     def find_by_username(username):
-        return User.query.filter_by(username=username).one_or_none()
+        return User.query.filter_by(username=username).first()
     
     def __repr__(self):
         return '<User {}>'.format(self.username)
