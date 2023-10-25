@@ -3,7 +3,7 @@ from app.models.role import Role
 from app import db
 from app.api.responses import response_with
 from app.api import responses as resp
-
+from flask_jwt_extended import jwt_required
 roles=Blueprint('roles',__name__)
 
 @roles.route('')

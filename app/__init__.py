@@ -3,13 +3,14 @@ from config import Config
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from config import config
-
+from flask_jwt_extended import JWTManager
 
 """
 L'oggetto db rappresenta il database e fornisce una api con tutte le funzionalità necsesarie
 """
 db = SQLAlchemy()
 
+jwt = JWTManager()
 
 def create_app(config_name):
     app=Flask(__name__)
@@ -17,6 +18,8 @@ def create_app(config_name):
 
     db.init_app(app)
 
+    jwt.init_app(app)
+    
     #registrazione bluenprints...
     from .main import main as main_bp
     app.register_blueprint(main_bp)

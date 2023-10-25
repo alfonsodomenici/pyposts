@@ -1,5 +1,6 @@
 from flask import current_app, jsonify
 from http import HTTPStatus
+from flask_jwt_extended.exceptions import JWTExtendedException
 from app.api import api
 from app.exceptions import ValidationError
 from app.api.responses import response_with
@@ -14,6 +15,11 @@ def validationError(e):
 def resource_not_found(e):
     current_app.logger.info(e)
     return response_with(resp.SERVER_ERROR_404)
+
+@api.errorhandler(JWTExtendedException)
+def jwtError(e):
+    current_app.logger.info(e)
+    return response_with(resp.FORBIDDEN_403, error=e.__repr__())
 
 @api.errorhandler(Exception)
 def genericServerError(e):
