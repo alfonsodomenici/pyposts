@@ -1,12 +1,15 @@
 from flask import request,jsonify, current_app, Blueprint
 from app.models.user import User
 from app import db
+from app.api.responses import response_with
+from app.api import responses as resp
 
 users=Blueprint('users',__name__)
 
 @users.route('')
 def all():
-    return jsonify([user.to_json() for user in User.query.all()])
+    result = [user.to_json() for user in User.query.all()]
+    return response_with(resp.SUCCESS_200, {'users':result})
 
 @users.route('', methods=['POST'])
 def create():
@@ -14,12 +17,12 @@ def create():
     user = User.from_json(json)
     db.session.add(user)
     db.session.commit()
-    return jsonify(user.to_json())
+    return response_with(resp.SUCCESS_201,{'user':user.to_json()})
 
 @users.route('/<int:id>')
 def find(id):
     found=db.get_or_404(User, id)
-    return jsonify(found.to_json())
+    return response_with(resp.SUCCESS_200,{'user':found.to_json()})
 
 @users.route('/<int:id>', methods=['PUT'])
 def update(id):
@@ -28,11 +31,11 @@ def update(id):
     found.username=json.get('username',found.username)
     db.session.add(found)
     db.session.commit()
-    return jsonify(found.to_json())
+    return response_with(resp.SUCCESS_200,{'user':found.to_json()})
 
 @users.route('/<int:id>', methods=['DELETE'])
 def delete(id):
     found=db.get_or_404(User,id)
     db.session.delete(found)
     db.session.commit()
-    return '',204
+    return response_with(resp.SUCCESS_204)
