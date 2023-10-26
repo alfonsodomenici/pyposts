@@ -8,7 +8,6 @@ from .responses import response_with
 from . import responses as resp
 from app.exceptions import NotResourceOwnerError
 from app.models.schemas import user_schema, users_schema
-
 users = Blueprint('users',__name__)
 
 @users.route('/', methods=['GET'])
@@ -51,9 +50,13 @@ def delete(id):
     db.session.commit()
     return response_with(resp.SUCCESS_204)
 
-
 @users.route('/login', methods=['POST'])
 def login():
+    """
+    Login endpoint
+
+    """
+
     data=request.get_json()
     
     if data.get('username') is None or data.get('password') is None:
