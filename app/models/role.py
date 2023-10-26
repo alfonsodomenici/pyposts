@@ -1,3 +1,4 @@
+from marshmallow import fields
 from datetime import datetime
 from passlib.hash import pbkdf2_sha256 as sha256 
 from flask import current_app
@@ -41,7 +42,7 @@ class Role(db.Model):
         return '<Role {}>'.format(self.name)
     
 
-class RoleSchema(ma.SQLAlchemyAutoSchema):
+"""class RoleSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Role
         load_instance = True
@@ -50,4 +51,15 @@ class RoleSchema(ma.SQLAlchemyAutoSchema):
     name=ma.auto_field(validate=must_not_be_blank)
 
 role_schema = RoleSchema()
-roles_schema = RoleSchema(many=True)   
+roles_schema = RoleSchema(many=True)   """
+
+class RoleSchema(ma.SQLAlchemySchema):
+    class Meta:
+        model = Role
+        sqla_session = db.session
+
+    id=fields.Int(dump_only=True)
+    name=fields.String(required=True)
+
+role_schema = RoleSchema()
+roles_schema = RoleSchema(many=True)

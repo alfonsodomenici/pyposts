@@ -14,23 +14,6 @@ users = Blueprint('users',__name__)
 @users.route('/', methods=['GET'])
 @admin_required()
 def all():
-    # ko TypeError: Object of type User is not JSON serializable
-    # return User.query.all()  
-
-    # ok content-type application/json
-    # return jsonify({'id':1,'username':'rossi'}) 
-
-    # ok content-type application/json
-    # return {'id':1,'username':'rossi'} 
-
-    # ok content-type application/json
-    # return [{'id':1,'username':'rossi'},{'id':1,'username':'verdi'},{'id':1,'username':'bianchi'}] 
-    
-    # ok content-type text/html; charset=utf-8
-    # return json.dumps({'id':1,'username':'rossi'}) 
-    identity = get_jwt_identity()
-    current_app.logger.info(f'current identy {identity}')
-    #result = [user.to_json() for user in User.query.all()]
     result=User.query.all()
     return response_with(resp.SUCCESS_200,value={'users':users_schema.dump(result)})
 

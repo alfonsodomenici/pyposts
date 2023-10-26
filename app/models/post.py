@@ -1,3 +1,4 @@
+from marshmallow import fields
 from datetime import datetime
 from passlib.hash import pbkdf2_sha256 as sha256 
 from flask import current_app
@@ -31,8 +32,9 @@ class Post(db.Model):
 
     def __repr__(self):
         return f'<Post {self.message}>'
-    
-class PostSchema(ma.SQLAlchemyAutoSchema):
+
+
+"""class PostSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Post
         include_fk = True
@@ -44,4 +46,16 @@ class PostSchema(ma.SQLAlchemyAutoSchema):
 
 
 postschema = PostSchema()
-posts_schema = PostSchema(many=True)  
+posts_schema = PostSchema(many=True) """ 
+
+class PostSchema(ma.SQLAlchemySchema):
+    class Meta:
+        model=Post
+        sqla_session=db.session
+    
+    id=fields.Int(dump_only=True)
+    message=fields.String(required=True)
+    user_id=fields.Int(dump_only=True)
+
+postschema = PostSchema()
+posts_schema = PostSchema(many=True)

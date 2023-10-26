@@ -1,3 +1,4 @@
+from marshmallow import fields
 from datetime import datetime
 from passlib.hash import pbkdf2_sha256 as sha256 
 from flask import current_app
@@ -56,7 +57,7 @@ class User(db.Model):
         return '<User {}>'.format(self.username)
     
 
-class UserSchema(ma.SQLAlchemyAutoSchema):
+"""class UserSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = User
         include_fk = True
@@ -67,5 +68,19 @@ class UserSchema(ma.SQLAlchemyAutoSchema):
     password=ma.auto_field(load_only=True, validate=must_not_be_blank)
     created_on=ma.auto_field(dump_only=True)
 
+user_schema = UserSchema()
+users_schema = UserSchema(many=True)   """
+
+class UserSchema(ma.SQLAlchemySchema):
+    class Meta:
+        model = User
+        sqla_session = db.session
+
+    id=fields.Int(dump_only=True)
+    username=fields.String(required=True, validate=must_not_be_blank)
+    password=fields.String(load_only=True, validate=must_not_be_blank)
+    created_on=fields.String(dump_only=True)
+    role_id=fields.Int(required=True)
+    
 user_schema = UserSchema()
 users_schema = UserSchema(many=True)   
