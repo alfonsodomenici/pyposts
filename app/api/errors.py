@@ -10,35 +10,35 @@ from .userResources import users
 
 @api.errorhandler(404)
 def notFoundError(e):
-    current_app.logger.error('Resource not found. {}'.format(e))
+    current_app.logger.error(e, exc_info=True)
     return response_with(resp.SERVER_ERROR_404)
 
 @api.errorhandler(ValidationError)
 def validationError(e):
-    current_app.logger.error('ValidationError. {}'.format(e.args[0]))
+    current_app.logger.error(e, exc_info=True)
     return response_with(resp.BAD_REQUEST_400, error=e.args[0])
 
 @api.errorhandler(NotResourceOwnerError)
 def notResourceOwnerError(e):
-    current_app.logger.error('NotResourceOwnerError. {}'.format(e.args[0]))
+    current_app.logger.error(e, exc_info=True)
     return response_with(resp.FORBIDDEN_403, error='You do not own the resource.Admin only')
 
 @api.errorhandler(HTTPException)
 def httpException(e):
-    current_app.logger.error(e)
+    current_app.logger.error(e, exc_info=True)
     return response_with(resp.SERVER_ERROR_500, error=e.__repr__())
 
 @api.errorhandler(DBAPIError)
 def dataLayerException(e):
-    current_app.logger.error(e)
+    current_app.logger.error(e, exc_info=True)
     return response_with(resp.SERVER_ERROR_500, error=e.__repr__())
 
 @api.errorhandler(JWTExtendedException)
 def jwtException(e):
-    current_app.logger.error(e)
+    current_app.logger.error(e, exc_info=True)
     return response_with(resp.FORBIDDEN_403, error=e.__repr__())
 
 @api.errorhandler(Exception)
 def allException(e):
-    current_app.logger.error(e)
+    current_app.logger.error(e, exc_info=True)
     return response_with(resp.SERVER_ERROR_500, error=e.__repr__())

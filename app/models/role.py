@@ -56,6 +56,7 @@ roles_schema = RoleSchema(many=True)   """
 class RoleSchema(ma.SQLAlchemySchema):
     class Meta:
         model = Role
+        load_instance = True
         sqla_session = db.session
 
     id=fields.Int(dump_only=True)

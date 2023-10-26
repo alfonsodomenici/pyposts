@@ -5,7 +5,7 @@ from .responses import response_with
 from . import responses as resp
 from . import api
 from app.models.user import User
-from app.models.post import Post
+from app.models.post import Post, posts_schema, post_schema
 from app import db
 from app.exceptions import NotResourceOwnerError
 
@@ -15,28 +15,25 @@ posts = Blueprint('posts',__name__)
 @jwt_required()
 def all():
     logged = logged_user()
-    posts = Post.query.all() if logged.is_admin() else Post.find_by_user_id(logged.id)
-    result = [post.to_json() for post in posts]
-    return response_with(resp.SUCCESS_200,value={'posts':result}) 
+    result = Post.query.all() if logged.is_admin() else Post.find_by_user_id(logged.id)
+    return response_with(resp.SUCCESS_200,value={'posts':posts_schema.dump(result)})
 
 @posts.route('/<int:id>')
 @jwt_required()
 def find(id):
     post=_check_and_find_post(id)
-    return response_with(resp.SUCCESS_200,value={'post':post.to_json()})
+    return response_with(resp.SUCCESS_200,value={'post':post_schema.dump(post)})
 
 
 @posts.route('/', methods=['POST'])
 @jwt_required()
 def create():
     logged = logged_user()
-    data = request.get_json()
-    current_app.logger.info(data)
-    post = Post.from_json(data)
+    post = post_schema.load(request.get_json())
     post.user_id=logged.id
     db.session.add(post)
     db.session.commit()
-    return response_with(resp.SUCCESS_201,value={'post':post.to_json()})
+    return response_with(resp.SUCCESS_201,value={'post':post_schema.dump(post)})
 
 @posts.route('/<int:id>', methods=['PUT'])
 @jwt_required()
@@ -45,7 +42,7 @@ def update(id):
     post.message = request.json.get('message',post.message)
     db.session.add(post)
     db.session.commit()    
-    return response_with(resp.SUCCESS_200,value={'post':post.to_json()})
+    return response_with(resp.SUCCESS_200,value={'post':post_schema.dump(post)})
 
 
 @posts.route('/<int:id>', methods=['DELETE'])

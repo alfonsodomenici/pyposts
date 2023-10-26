@@ -21,19 +21,17 @@ def all():
 @jwt_required()
 def find(id):
     user=_check_and_find_user(id)
-    return response_with(resp.SUCCESS_200,value={'user':user.to_json()})
+    return response_with(resp.SUCCESS_200,value={'user':user_schema.dump(user)})
 
 
 @users.route('/', methods=['POST'])
 def create():
     data = request.get_json()
-    current_app.logger.info(data)
-    #user = User.from_json(data)
     user = user_schema.load(data)
     user.password=User.generate_hash(user.password)
     db.session.add(user)
     db.session.commit()
-    return response_with(resp.SUCCESS_201,value={'user':user.to_json()})
+    return response_with(resp.SUCCESS_201,value={'user':user_schema.dump(user)})
 
 @users.route('/<int:id>', methods=['PUT'])
 @jwt_required()
@@ -42,7 +40,7 @@ def update(id):
     user.username = request.json.get('username',user.username)
     db.session.add(user)
     db.session.commit()    
-    return response_with(resp.SUCCESS_200,value={'user':user.to_json()})
+    return response_with(resp.SUCCESS_200,value={'user':user_schema.dump(user)})
 
 
 @users.route('/<int:id>', methods=['DELETE'])

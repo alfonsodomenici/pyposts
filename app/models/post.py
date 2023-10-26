@@ -51,11 +51,12 @@ posts_schema = PostSchema(many=True) """
 class PostSchema(ma.SQLAlchemySchema):
     class Meta:
         model=Post
+        load_instance = True
         sqla_session=db.session
     
     id=fields.Int(dump_only=True)
     message=fields.String(required=True)
     user_id=fields.Int(dump_only=True)
 
-postschema = PostSchema()
+post_schema = PostSchema()
 posts_schema = PostSchema(many=True)
