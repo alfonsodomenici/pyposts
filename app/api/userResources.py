@@ -1,8 +1,8 @@
 from flask import json,jsonify,request, Blueprint, current_app
-from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
+from flask_jwt_extended import create_access_token, get_jwt, jwt_required
 from app import db
 from . import api
-from .decorators import admin_required, resource_owner_required
+from .decorators import admin_required
 from app.models.user import User
 from .responses import response_with
 from . import responses as resp
@@ -18,9 +18,9 @@ def all():
     return response_with(resp.SUCCESS_200,value={'users':users_schema.dump(result)})
 
 @users.route('/<int:id>')
-@resource_owner_required()
+@jwt_required()
 def find(id):
-    user=_check_and_find_user(id)
+    user= User.find_by_id_secure(id,get_jwt())
     return response_with(resp.SUCCESS_200,value={'user':user_schema.dump(user)})
 
 
@@ -34,9 +34,9 @@ def create():
     return response_with(resp.SUCCESS_201,value={'user':user_schema.dump(user)})
 
 @users.route('/<int:id>', methods=['PUT'])
-@resource_owner_required()
+@jwt_required()
 def update(id):
-    user = _check_and_find_user(id)
+    user = User.find_by_id_secure(id,get_jwt())
     user.username = request.json.get('username',user.username)
     db.session.add(user)
     db.session.commit()    
@@ -44,9 +44,9 @@ def update(id):
 
 
 @users.route('/<int:id>', methods=['DELETE'])
-@resource_owner_required()
+@admin_required()
 def delete(id):
-    user = _check_and_find_user(id)
+    user = db.get_or_404(User,id)
     db.session.delete(user)
     db.session.commit()
     return response_with(resp.SUCCESS_204)
@@ -69,14 +69,4 @@ def login():
         return response_with(resp.SUCCESS_201,value={'access_token':token})
     
     return response_with(resp.UNAUTHORIZED_401,message='login failed, invalid password')
-
-def _check_and_find_user(id):
-    identity = get_jwt_identity()
-    logged= User.find_by_username(identity)
-    current_app.logger.info(logged.id)
-    user = db.get_or_404(User,id)
-    current_app.logger.info(user.id)
-    if id!=logged.id and not logged.is_admin():
-        raise NotResourceOwnerError("id non corrospondente")
-    return user
 

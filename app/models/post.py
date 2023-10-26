@@ -7,6 +7,7 @@ from app.exceptions import ValidationError
 from app.datetimes import format_dt
 from app import ma
 from app.models.schemas import must_not_be_blank
+from app.exceptions import NotResourceOwnerError
 
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True, nullable=False)
@@ -25,6 +26,15 @@ class Post(db.Model):
             'message':self.message,
             'user_id':self.user_id
         }  
+    
+    @classmethod
+    def find_by_id_secure(cls,id,claims):
+        sub_id=claims['sub_id']
+        role=claims['role']
+        post=db.get_or_404(cls,id)
+        if post.user_id!=sub_id and role!='ADMIN':
+            raise NotResourceOwnerError('not owner')
+        return post
     
     @classmethod
     def find_by_user_id(cls, user_id):

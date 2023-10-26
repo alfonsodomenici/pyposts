@@ -8,6 +8,7 @@ from app.datetimes import format_dt
 from app.models.role import Role
 from app import ma
 from app.models.schemas import must_not_be_blank
+from app.exceptions import NotResourceOwnerError
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True, nullable=False)
@@ -49,7 +50,16 @@ class User(db.Model):
     @classmethod
     def find_by_username(cls, username):
         return cls.query.filter_by(username=username).first()
-
+    
+    @classmethod
+    def find_by_id_secure(cls,id,claims):
+        sub_id=claims['sub_id']
+        role=claims['role']
+        user=db.get_or_404(cls,id)
+        if user.id!=sub_id and role!='ADMIN':
+            raise NotResourceOwnerError('not owner')
+        return user
+    
     def is_admin(self):
         return self.role.name=='ADMIN'
 
