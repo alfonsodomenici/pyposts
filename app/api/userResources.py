@@ -7,7 +7,7 @@ from app.models.user import User
 from .responses import response_with
 from . import responses as resp
 from app.exceptions import NotResourceOwnerError
-from app.models.user import user_schema, users_schema
+from app.models.schemas import user_schema, users_schema
 
 users = Blueprint('users',__name__)
 

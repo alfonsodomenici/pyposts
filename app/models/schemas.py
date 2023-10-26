@@ -1,12 +1,59 @@
 from marshmallow import ValidationError 
-from marshmallow_sqlalchemy.fields import Nested
+from marshmallow import fields
+from app import ma,db
+from app.models.role import Role
+from app.models.user import User
+from app.models.post import Post
+
 # Custom validator
 def must_not_be_blank(data):
     if not data or str(data).isspace():
         raise ValidationError("Data not provided.")
+
+class RoleSchema(ma.SQLAlchemySchema):
+    class Meta:
+        model = Role
+        load_instance = True
+        sqla_session = db.session
+
+    id=fields.Int(dump_only=True)
+    name=fields.String(required=True)
+
+class UserSchema(ma.SQLAlchemySchema):
+    class Meta:
+        model = User
+        load_instance = True
+        sqla_session = db.session
+
+    id=fields.Int(dump_only=True)
+    username=fields.String(required=True, validate=must_not_be_blank)
+    password=fields.String(load_only=True, validate=must_not_be_blank)
+    created_on=fields.String(dump_only=True)
+    role_id=fields.Int(required=True)
+    role=fields.Nested(RoleSchema, only=['name','id'])
+
+class PostSchema(ma.SQLAlchemySchema):
+    class Meta:
+        model=Post
+        load_instance = True
+        sqla_session=db.session
     
-class SmartNested(Nested):
-    def serialize(self, attr, obj, accessor=None):
-        if attr not in obj.__dict__:
-            return {"id": int(getattr(obj, attr + "_id"))}
-        return super(SmartNested, self).serialize(attr, obj, accessor)
+    id=fields.Int(dump_only=True)
+    message=fields.String(required=True)
+    user_id=fields.Int(dump_only=True)
+
+role_schema = RoleSchema()
+roles_schema = RoleSchema(many=True)
+user_schema = UserSchema()
+users_schema = UserSchema(many=True)  
+post_schema = PostSchema()
+posts_schema = PostSchema(many=True)
+
+
+
+ 
+
+
+
+
+

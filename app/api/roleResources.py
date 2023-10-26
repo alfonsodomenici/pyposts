@@ -2,7 +2,8 @@ from flask import json,jsonify,request, Blueprint
 from flask_jwt_extended import jwt_required
 from app import db
 from . import api
-from app.models.role import Role, role_schema, roles_schema
+from app.models.role import Role
+from app.models.schemas import role_schema, roles_schema
 from .decorators import admin_required
 from app.api.responses import response_with
 from app.api import responses as resp

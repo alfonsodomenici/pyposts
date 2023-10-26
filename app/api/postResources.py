@@ -5,7 +5,8 @@ from .responses import response_with
 from . import responses as resp
 from . import api
 from app.models.user import User
-from app.models.post import Post, posts_schema, post_schema
+from app.models.post import Post
+from app.models.schemas import posts_schema, post_schema
 from app import db
 from app.exceptions import NotResourceOwnerError
 

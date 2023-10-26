@@ -1,31 +1,12 @@
-from marshmallow import fields
-from datetime import datetime
 from passlib.hash import pbkdf2_sha256 as sha256 
-from flask import current_app
 from app import db
 from app.exceptions import ValidationError
-from app.datetimes import format_dt
-from app import ma
-from app.models.schemas import must_not_be_blank
 from app.exceptions import NotResourceOwnerError
 
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True, nullable=False)
     message = db.Column(db.String(512),nullable=False)
-    user_id = db.Column(db.Integer,db.ForeignKey('user.id'), nullable=False)
-
-    @staticmethod
-    def from_json(json):
-        if json.get('message') is None or json.get('message') == '':
-            raise ValidationError('message vuoto')
-        return Post(message=json.get('message'))  
-
-    def to_json(self):
-        return {
-            'id':self.id,
-            'message':self.message,
-            'user_id':self.user_id
-        }  
+    user_id = db.Column(db.Integer,db.ForeignKey('user.id'), nullable=False) 
     
     @classmethod
     def find_by_id_secure(cls,id,claims):
@@ -57,16 +38,3 @@ class Post(db.Model):
 
 postschema = PostSchema()
 posts_schema = PostSchema(many=True) """ 
-
-class PostSchema(ma.SQLAlchemySchema):
-    class Meta:
-        model=Post
-        load_instance = True
-        sqla_session=db.session
-    
-    id=fields.Int(dump_only=True)
-    message=fields.String(required=True)
-    user_id=fields.Int(dump_only=True)
-
-post_schema = PostSchema()
-posts_schema = PostSchema(many=True)
