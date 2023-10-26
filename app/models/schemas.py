@@ -10,15 +10,17 @@ def must_not_be_blank(data):
     if not data or str(data).isspace():
         raise ValidationError("Data not provided.")
 
-class RoleSchema(ma.SQLAlchemySchema):
+
+class PostSchema(ma.SQLAlchemySchema):
     class Meta:
-        model = Role
+        model=Post
         load_instance = True
-        sqla_session = db.session
-
+        sqla_session=db.session
+    
     id=fields.Int(dump_only=True)
-    name=fields.String(required=True)
-
+    message=fields.String(required=True)
+    user_id=fields.Int(dump_only=True)
+    
 class UserSchema(ma.SQLAlchemySchema):
     class Meta:
         model = User
@@ -30,17 +32,18 @@ class UserSchema(ma.SQLAlchemySchema):
     password=fields.String(load_only=True, validate=must_not_be_blank)
     created_on=fields.String(dump_only=True)
     role_id=fields.Int(required=True)
-    role=fields.Nested(RoleSchema, only=['name','id'])
-
-class PostSchema(ma.SQLAlchemySchema):
-    class Meta:
-        model=Post
-        load_instance = True
-        sqla_session=db.session
+    posts=fields.Nested(PostSchema, many=True, only=['message','id'])
     
+class RoleSchema(ma.SQLAlchemySchema):
+    class Meta:
+        model = Role
+        load_instance = True
+        sqla_session = db.session
+
     id=fields.Int(dump_only=True)
-    message=fields.String(required=True)
-    user_id=fields.Int(dump_only=True)
+    name=fields.String(required=True)
+    users=fields.Nested(UserSchema, many=True, only=['username','id'])
+
 
 role_schema = RoleSchema()
 roles_schema = RoleSchema(many=True)
