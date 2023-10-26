@@ -26,7 +26,6 @@ def create():
 @users.route('/<int:id>')
 @resource_owner_required()
 def find(id):
-    logged_user=_check_and_find_user(id)
     found=db.get_or_404(User,id)
     return response_with(resp.SUCCESS_200,{'user':found.to_json()})
 
@@ -66,10 +65,3 @@ def login():
         return response_with(resp.SUCCESS_201,value={'access_token':token})
 
     return response_with(resp.UNAUTHORIZED_401, error='Login failed. username o password errati')
-
-def _check_and_find_user(id):
-    logged_user=get_jwt_identity()
-    db_logged=User.find_by_username(logged_user)
-    if db_logged.role.name=='USER' and id!=db_logged.id:
-        raise NotResourceOwnerError('id non corrispondente')
-    return db_logged

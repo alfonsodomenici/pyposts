@@ -1,3 +1,4 @@
+from jwt.exceptions import PyJWTError
 from flask import current_app, jsonify
 from http import HTTPStatus
 from flask_jwt_extended.exceptions import JWTExtendedException
@@ -9,22 +10,27 @@ from app.exceptions import NotResourceOwnerError
 
 @api.errorhandler(ValidationError)
 def validationError(e):
-    current_app.logger.info(e)
+    current_app.logger.error(e, exc_info=True)
     return response_with(resp.INVALID_INPUT_422,error=e.args[0])
 
 @api.errorhandler(NotResourceOwnerError)
 def notResourceOwnerError(e):
-    current_app.logger.error('NotResourceOwnerError. {}'.format(e.args[0]))
+    current_app.logger.error(e, exc_info=True)
     return response_with(resp.FORBIDDEN_403, error='You do not own the resource.Admin only')
 
 @api.errorhandler(HTTPStatus.NOT_FOUND)
 def resource_not_found(e):
-    current_app.logger.info(e)
+    current_app.logger.error(e, exc_info=True)
     return response_with(resp.SERVER_ERROR_404)
 
+@api.errorhandler(PyJWTError)
+def pyJwtError(e):
+    current_app.logger.error(e, exc_info=True)
+    return response_with(resp.FORBIDDEN_403, error='Request forbidden')
+
 @api.errorhandler(JWTExtendedException)
-def jwtError(e):
-    current_app.logger.info(e)
+def jwtExtendError(e):
+    current_app.logger.error(e, exc_info=True)
     return response_with(resp.FORBIDDEN_403, error='Request forbidden')
 
 @api.errorhandler(Exception)

@@ -37,6 +37,6 @@ def resource_owner_required(payload_name: str ='user',payload_field: int ='id'):
                 return result
             except Exception as e:
                 current_app.logger.error(e,exc_info=True)
-                raise NotResourceOwnerError('error i decorator')
+                raise e
         return decorator
     return wrapper
