@@ -10,13 +10,13 @@ from app.api import responses as resp
 roles = Blueprint('roles',__name__)
 
 @roles.route('/', methods=['GET'])
-@jwt_required()
+@admin_required()
 def all():
     result=Role.query.all()
     return response_with(resp.SUCCESS_200,value={'roles':roles_schema.dump(result)})
 
 @roles.route('/<int:id>')
-@jwt_required
+@admin_required()
 def find(id):
     result=db.get_or_404(Role,id)
     return response_with(resp.SUCCESS_200,value={'role':role_schema.dump(result)})

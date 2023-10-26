@@ -2,7 +2,7 @@ from flask import json,jsonify,request, Blueprint, current_app
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
 from app import db
 from . import api
-from .decorators import admin_required
+from .decorators import admin_required, resource_owner_required
 from app.models.user import User
 from .responses import response_with
 from . import responses as resp
@@ -18,7 +18,7 @@ def all():
     return response_with(resp.SUCCESS_200,value={'users':users_schema.dump(result)})
 
 @users.route('/<int:id>')
-@jwt_required()
+@resource_owner_required()
 def find(id):
     user=_check_and_find_user(id)
     return response_with(resp.SUCCESS_200,value={'user':user_schema.dump(user)})
@@ -34,7 +34,7 @@ def create():
     return response_with(resp.SUCCESS_201,value={'user':user_schema.dump(user)})
 
 @users.route('/<int:id>', methods=['PUT'])
-@jwt_required()
+@resource_owner_required()
 def update(id):
     user = _check_and_find_user(id)
     user.username = request.json.get('username',user.username)
@@ -44,7 +44,7 @@ def update(id):
 
 
 @users.route('/<int:id>', methods=['DELETE'])
-@admin_required()
+@resource_owner_required()
 def delete(id):
     user = _check_and_find_user(id)
     db.session.delete(user)
@@ -64,7 +64,7 @@ def login():
         return response_with(resp.UNAUTHORIZED_401,message='login failed')
 
     if User.check_hash(data.get('password'),user.password):
-        additional_claims={'role':user.role.name}
+        additional_claims={'role':user.role.name, 'sub_id':user.id}
         token=create_access_token(identity=user.username, additional_claims=additional_claims)
         return response_with(resp.SUCCESS_201,value={'access_token':token})
     
