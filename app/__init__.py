@@ -4,7 +4,6 @@ from config import config
 from flask_jwt_extended import JWTManager
 from flask_marshmallow import Marshmallow
 from flasgger import Swagger
-from app.api.commentResources import Comment,CommentItem
 
 template = {
   "swagger": "2.0",
