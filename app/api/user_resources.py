@@ -3,8 +3,8 @@ from app.models.user import User
 from app import db
 from app.api.responses import response_with
 from app.api import responses as resp
-from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
-from app.api.decorators import admin_required, resource_owner_required
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt
+from app.api.decorators import admin_required
 from app.exceptions import NotResourceOwnerError
 
 users=Blueprint('users',__name__)
@@ -24,16 +24,16 @@ def create():
     return response_with(resp.SUCCESS_201,{'user':user.to_json()})
 
 @users.route('/<int:id>')
-@resource_owner_required()
+@jwt_required()
 def find(id):
-    found=db.get_or_404(User,id)
+    found=User.find_by_id_secure(id,get_jwt())
     return response_with(resp.SUCCESS_200,{'user':found.to_json()})
 
 @users.route('/<int:id>', methods=['PUT'])
 @jwt_required()
 def update(id):
     json=request.get_json()
-    found=db.get_or_404(User,id)
+    found=User.find_by_id_secure(id,get_jwt())
     found.username=json.get('username',found.username)
     db.session.add(found)
     db.session.commit()

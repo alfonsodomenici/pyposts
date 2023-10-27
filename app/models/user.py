@@ -2,8 +2,9 @@ from passlib.hash import pbkdf2_sha256 as sha256
 from flask import current_app
 from datetime import datetime
 from app import db
-from app.exceptions import ValidationError
+from app.exceptions import ValidationError,NotResourceOwnerError
 from app.models.role import Role
+
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -51,5 +52,14 @@ class User(db.Model):
     def find_by_username(username):
         return User.query.filter_by(username=username).first()
     
+    @classmethod
+    def find_by_id_secure(cls,id,claims):
+        sub_id=claims['sub_id']
+        role=claims['role']
+        user = db.get_or_404(cls,id)
+        if user.id!=sub_id and role!='ADMIN':
+            raise NotResourceOwnerError('not owner')
+        return user
+
     def __repr__(self):
         return '<User {}>'.format(self.username)
