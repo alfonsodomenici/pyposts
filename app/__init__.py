@@ -4,11 +4,13 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from config import config
 from flask_jwt_extended import JWTManager
-
+from flask_marshmallow import Marshmallow
 """
 L'oggetto db rappresenta il database e fornisce una api con tutte le funzionalità necsesarie
 """
 db = SQLAlchemy()
+
+ma=Marshmallow()
 
 jwt = JWTManager()
 
@@ -18,6 +20,8 @@ def create_app(config_name):
 
     db.init_app(app)
 
+    ma.init_app(app)
+    
     jwt.init_app(app)
     
     #registrazione bluenprints...

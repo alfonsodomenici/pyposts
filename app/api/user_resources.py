@@ -6,28 +6,30 @@ from app.api import responses as resp
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt
 from app.api.decorators import admin_required
 from app.exceptions import NotResourceOwnerError
+from app.models.schemas import user_schema,users_schema
 
 users=Blueprint('users',__name__)
 
 @users.route('')
 @admin_required()
 def all():
-    result = [user.to_json() for user in User.query.all()]
-    return response_with(resp.SUCCESS_200, {'users':result})
+    result = User.query.all()
+    return response_with(resp.SUCCESS_200, {'users':users_schema.dump(result)})
 
 @users.route('', methods=['POST'])
 def create():
     json = request.get_json()
-    user = User.from_json(json)
+    user = user_schema.load(json)
+    user.password=User.generate_hash(user.password)
     db.session.add(user)
     db.session.commit()
-    return response_with(resp.SUCCESS_201,{'user':user.to_json()})
+    return response_with(resp.SUCCESS_201,{'user':user_schema.dump(user)})
 
 @users.route('/<int:id>')
 @jwt_required()
 def find(id):
     found=User.find_by_id_secure(id,get_jwt())
-    return response_with(resp.SUCCESS_200,{'user':found.to_json()})
+    return response_with(resp.SUCCESS_200,{'user':user_schema.dump(found)})
 
 @users.route('/<int:id>', methods=['PUT'])
 @jwt_required()
@@ -37,7 +39,7 @@ def update(id):
     found.username=json.get('username',found.username)
     db.session.add(found)
     db.session.commit()
-    return response_with(resp.SUCCESS_200,{'user':found.to_json()})
+    return response_with(resp.SUCCESS_200,{'user':user_schema.dump(found)})
 
 @users.route('/<int:id>', methods=['DELETE'])
 @admin_required()

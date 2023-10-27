@@ -7,22 +7,6 @@ class Post(db.Model):
     id=db.Column(db.Integer,primary_key=True)
     message=db.Column(db.String(512), nullable=False)
     user_id=db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-
-
-    def to_json(self):
-        return {
-            'id':self.id,
-            'message': self.message,
-            'user_id': self.user_id
-        }
-
-    @staticmethod
-    def from_json(json):
-        msg = json.get('message')
-        if msg is None or msg=='':
-            raise ValidationError('Message property message is empty')
-        
-        return Post(message=msg)
     
     @staticmethod
     def find_by_user_id(user_id):

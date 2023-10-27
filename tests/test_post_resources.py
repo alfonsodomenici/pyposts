@@ -77,6 +77,8 @@ def test_find(client,role_admin,role_user):
     assert resp.status_code==HTTPStatus.OK
     assert 'post' in resp.json
     assert resp.json['post']['id']==admin_post_id
+    assert resp.json['post']['message']=='admin post'
+    assert resp.json['post']['user_id']==admin_id
 
     """
     user calls
