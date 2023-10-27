@@ -4,6 +4,7 @@ from config import config
 from flask_jwt_extended import JWTManager
 from flask_marshmallow import Marshmallow
 from flasgger import Swagger
+from app.api.commentResources import Comment,CommentItem
 
 template = {
   "swagger": "2.0",
@@ -56,5 +57,5 @@ def create_app(config_name):
 
     from .api import api as api_bp
     app.register_blueprint(api_bp, url_prefix='/api')
-    
+
     return app
