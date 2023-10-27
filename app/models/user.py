@@ -36,7 +36,7 @@ class User(db.Model):
             raise ValidationError('User property password is empty')
         if role_id is None or role_id=='':
             raise ValidationError('User property role_id is empty')
-        if Role.query.get(role_id) is None:
+        if db.session.get(Role, role_id) is None:
             raise ValidationError(f'User property role_id not exsists. id={role_id}')
         hash=User.generate_hash(pwd)
         return User(username=usr,password=hash,role_id=role_id)
