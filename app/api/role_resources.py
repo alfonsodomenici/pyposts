@@ -15,7 +15,6 @@ def all():
     return response_with(resp.SUCCESS_200,{'roles':result})
 
 @roles.route('',methods=['POST'])
-@admin_required()
 def create():
     json = request.get_json()
     current_app.logger.info(json)
