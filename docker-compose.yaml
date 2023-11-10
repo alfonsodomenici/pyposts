@@ -1,0 +1,26 @@
+version: "3"
+services:
+  py-app:
+    container_name: pyapp
+    build: .
+    env_file:
+      - ./.env.docker.local
+    ports:
+      - 5000:5000
+    restart: always
+    depends_on:
+      - py-data
+  
+  py-data:
+    container_name: pydb
+    image: mariadb:10.7
+    restart: always
+    expose:
+      - 3306
+    env_file:
+      - ./.env.db
+    volumes:
+      - "py-data:/var/lib/mysql"
+
+volumes:
+  py-data:
