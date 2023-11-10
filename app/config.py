@@ -12,14 +12,16 @@ class Config:
 
 class DevelopmentConfig(Config):
     DEBUG:True
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DEV_DATABASE_URL') or 'sqlite:///' + os.path.join(basedir, 'app_dev.db')
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DEV_DATABASE_URL') or \
+        "mysql+mysqlconnector://pyposts:pyposts@localhost:3306/pyposts"
 
 class TestingConfig(Config):
     TESTING=True
     SQLALCHEMY_DATABASE_URI = os.environ.get('TEST_DATABASE_URL') or 'sqlite://'
 
 class ProductionConfig(Config):
-    SQLALCHEMY_DATABASE_URI = os.environ.get('PROD_DATABASE_URL') or 'sqlite:///' + os.path.join(basedir, 'app_prod.db')
+    SQLALCHEMY_DATABASE_URI = os.environ.get('PROD_DATABASE_URL') or \
+        "mysql+mysqlconnector://pyposts:pyposts@localhost:3306/pyposts"
 
 class DockerConfig(ProductionConfig):
 
