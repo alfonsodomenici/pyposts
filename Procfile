@@ -1,1 +1,1 @@
-web: gunicorn run:app --workers=4
+web: gunicorn pyposts:app --workers=4

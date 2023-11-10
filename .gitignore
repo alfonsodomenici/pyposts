@@ -37,4 +37,6 @@ nosetests.xml
 
 venv
 app.db
-pypostit.log*
+app_dev.db
+.env
+.env.docker.local
